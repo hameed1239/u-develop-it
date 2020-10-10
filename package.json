@@ -8,6 +8,8 @@
     "migrate": "sqlite3 db/election.db < db/schema.sql",
     "seed": "sqlite3 db/election.db < db/seeds.sql",
     "db": "sqlite3 db/election.db",
+    "dropParties": "sqlite3 DROP TABLE IF EXISTS parties",
+    "dropCandidates": "sqlite3 DROP TABLE IF EXISTS candidates",
     "start": "nodemon server.js"
   },
   "repository": {
