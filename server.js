@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
-// app.use(express.json());
+app.use(express.json());
 // Connect to database
 const db = new sqlite3.Database('./db/election.db', err => {
     if (err) {
@@ -69,29 +69,28 @@ app.delete("/api/candidate/:id", (req, res) => {
 // });
 
 // Create a candidate
-app.post('/api/candidate', (req, res) => {
-    res.json(req.body);
-    // const errors = inputCheck(req.body, 'first_name', 'last_name', 'industry_connected');
-    // if (errors) {
-    //     res.status(400).json({ error: errors });
-    //     return;
-    // }
-    // const sql = `INSERT INTO candidates (id, first_name, last_name, industry_connected) 
-    //               VALUES (?,?,?,?)`;
-    // const params = [body.id, body.first_name, body.last_name, body.industry_connected];
-    // // ES5 function, not arrow function, to use this
-    // db.run(sql, params, function (err, result) {
-    //     if (err) {
-    //         res.status(500).json({
-    //             error: err.message
-    //         });
-    //     }
-    //     res.json({
-    //         message: 'success',
-    //         data: body,
-    //         id:this.lastID
-    //     })
-    // });
+app.post('/api/candidate', ({body}, res) => {
+    const errors = inputCheck(body, 'first_name', 'last_name', 'industry_connected');
+    if (errors) {
+        res.status(400).json({ error: errors });
+        return;
+    }
+    const sql = `INSERT INTO candidates (id, first_name, last_name, industry_connected) 
+                  VALUES (?,?,?,?)`;
+    const params = [body.id, body.first_name, body.last_name, body.industry_connected];
+    // ES5 function, not arrow function, to use this
+    db.run(sql, params, function (err, result) {
+        if (err) {
+            res.status(500).json({
+                error: err.message
+            });
+        }
+        res.json({
+            message: 'success',
+            data: body,
+            id:this.lastID
+        })
+    });
 })
 
 // Default response for any other request(Not Found) Catch all
